@@ -1,61 +1,54 @@
 <template>
   <div class="dashboard-wrapper">
-    <header class="header">
-      <div class="brand">
-        <h1>ICRT Dashboard</h1>
-        <span class="badge">{{ rawData.category }}</span>
+    <HeaderNav :category="rawData?.category" v-model="selectedUser" />
+
+    <AggregateStats :stats="rawData?.aggregate_stats" />
+
+    <main class="main-panel">
+
+      <DownloadPanel :selectedUser="selectedUser" @download="handleDownload" />
+      <div>
+        <div>
+          <Bar />
+        </div>
       </div>
-      <div class="user-role">
-        <label for="user"> Select a user: </label>
-        <select name="user" id="user">
-          <option value="basic">Basic</option>
-          <option value="premium">Premium</option>
-          <option value="enterprise">Enterprise</option>
-        </select>
-      </div>
-    </header>
+
+    </main>
+
   </div>
 </template>
 
 <script>
+import HeaderNav from './components/HeaderNav.vue';
+import AggregateStats from './components/Stats.vue';
+import DownloadPanel from './components/DownloadPanel.vue';
 import rawData from './constants/data';
 
 export default {
   name: 'App',
   components: {
+    HeaderNav,
+    AggregateStats,
+    DownloadPanel
   },
   data() {
     return {
-      rawData
+      rawData,
+      selectedUser: "basic"
     };
+  },
+  methods: {
+    handleDownload() {
+      if (this.selectedUser !== 'enterprise') return;
+    }
+  },
+  computed: {
+
   }
 }
 </script>
 
 <style scoped>
-.user-role {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.select-box {
-  padding: 0.45rem 0.8rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background-color: #ffffff;
-  font-weight: 600;
-  color: #0f172a;
-  cursor: pointer;
-  outline: none;
-}
-
-.select-box:focus {
-  border-color: #2563eb;
-}
-
 .dashboard-wrapper {
   max-width: 950px;
   margin: 2rem auto;
@@ -64,32 +57,11 @@ export default {
   color: #1e293b;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e2e8f0;
-  flex-wrap: wrap;
-  gap: 1rem;
+.main-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
-
-.brand h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #0f172a;
-}
-
-.badge {
-  display: inline-block;
-  margin-top: 0.35rem;
-  background: #e0f2fe;
-  color: #0369a1;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
 </style>

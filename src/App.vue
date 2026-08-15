@@ -7,6 +7,7 @@
     <main class="main-panel">
 
       <DownloadPanel :selectedUser="selectedUser" @download="handleDownload" />
+      <ChartView :products="rawData?.products" :selectedUser="selectedUser" />
       <div>
         <div>
           <Bar />
@@ -22,6 +23,7 @@
 import HeaderNav from './components/HeaderNav.vue';
 import AggregateStats from './components/Stats.vue';
 import DownloadPanel from './components/DownloadPanel.vue';
+import ChartView from './components/ChartView.vue';
 import rawData from './constants/data';
 
 export default {
@@ -29,7 +31,8 @@ export default {
   components: {
     HeaderNav,
     AggregateStats,
-    DownloadPanel
+    DownloadPanel,
+    ChartView
   },
   data() {
     return {

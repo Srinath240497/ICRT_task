@@ -1,24 +1,34 @@
-# icrt_task
+1. Database Schema: Draft a relational database schema to store users, product details, and metrics. 
+Outline your table structures, primary/foreign keys, and any indexes you would use to optimize lookups.
 
-## Project setup
-```
-npm install
-```
+--------------------------------------------------------------------------------------------------------------------------------------------
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+2. API Security: Detail conceptually how you would secure the backend API endpoint on the server side. 
+How do you ensure a malicious "Basic" user cannot bypass your frontend UI restriction to call the API directly and download raw Enterprise data?
 
-### Compiles and minifies for production
-```
-npm run build
-```
+A strong API Security can be achieved by authenticating the identity, permissions and data integrity in all possible layers on the server. 
+The client is completely untrusted, means UI level authentications can be easily breached. So, all possible security measures must be implemented on the server. 
 
-### Lints and fixes files
-```
-npm run lint
-```
+Authentication using JWT:
+When the client raise an API request with user details(username, password) during login, the server authenticates the login by creating a JWT (JSON Web Token) using jsonwebtoken library. 
+The JWT encrypts the user data by generating a token consists of Header (specifies the signing algorithm, eg: HS256), Payload (contains user details in JSON) and Signature (generated using a private key from the server side). 
+This generated JWT token will be send as a response to the client from server, the client will store this token into the local storage which has an expiration time (expiresIn property is used JWT sign function). 
+Once the token is stored, then whenever the client sends an API request, it attaches the JWT token in the Authorization Header for subsequent requests.
+When the API request reaches the server, an authentication middleware authenticates the auth header to check whether the token exists. 
+If the token exists, then the middleware decodes and verifies the token to check if its a valid token and sends back the required response to the client request. 
+If a “Basic” user attempts to modify the role as “Enterprise” locally and tries to access the report for download, the authorization check fails and returns a 401 Unauthorised response.
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Data Layer Authentication:
+In some cases, even if the user bypasses the JWT authentication then by using Data layer authentication we can prevent unauthorized access. 
+While retrieving the raw Enterprise data from the database, we cannot retrieve the data based on the client request parameters alone. 
+To prevent the data, implement the authenticated user verified identity, organisation or subscription level in every database query directly into the WHERE clause. 
+If a “Basic” user attempts to access the query of Enterprise data, then the database returns no record found, this prevents the data leakage in the Data Layer.
+
+Rate Limiting:
+To improve security against Automated Scarping or any Brute-Force Hacking technique where the user tries to login with several password combinations such as millions of combinations per second, 
+a middleware can be used to login and download reports API calls to restrict the maximum number of requests allowed within a specific time window like 10 requests per 5 mins.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+3. AI Code Vetting: As a developer leveraging AI development tools to write code, 
+what are the top two security or performance vulnerabilities you actively look out for in AI-generated code, and how do you vet them?

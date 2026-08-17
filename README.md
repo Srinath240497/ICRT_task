@@ -1,6 +1,81 @@
 1. Database Schema: Draft a relational database schema to store users, product details, and metrics. 
 Outline your table structures, primary/foreign keys, and any indexes you would use to optimize lookups.
 
+// User Organisation
+CREATE TABLE organizations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(150) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+)
+
+// Enum for User Roles
+CREATE TYPE user_role AS ENUM ('basic', 'premium', 'enterprise', 'admin');
+
+// User Details
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE RESTRICT,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    role user_role NOT NULL DEFAULT 'basic',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+// Product Categories
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+// Product Details
+CREATE TABLE products (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    category_id INT NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
+    name VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    product_count INT NOT NULL DEFAULT 0,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),  
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT unique_product_model UNIQUE (name, model)
+);
+
+// Product Metrics
+CREATE TABLE product_metrics (
+    id BIGSERIAL PRIMARY KEY,
+    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    score NUMERIC(3, 2) NOT NULL CHECK (score >= 0 AND score <= 100),
+    ttr_days NUMERIC(4, 2) NOT NULL CHECK (ttr_days >= 0),
+    download_id VARCHAR(50) UNIQUE,
+    evaluated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+// Download Logs
+CREATE TABLE download_logs (
+    id BIGSERIAL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+    report_type VARCHAR(50) NOT NULL DEFAULT 'download_report.pdf',
+    downloaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+Indexing for Optimisation:
+
+* Faster Authentication
+CREATE UNIQUE INDEX idx_users_email ON users(email);
+
+* Role access verification
+CREATE INDEX idx_users_org_role ON users(organization_id, role);
+
+* Category based indexing for dashboard queries
+CREATE INDEX idx_product_details ON products(category_id, name) WHERE is_active = TRUE;
+
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 2. API Security: Detail conceptually how you would secure the backend API endpoint on the server side. 

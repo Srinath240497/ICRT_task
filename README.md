@@ -32,3 +32,21 @@ a middleware can be used to login and download reports API calls to restrict the
 
 3. AI Code Vetting: As a developer leveraging AI development tools to write code, 
 what are the top two security or performance vulnerabilities you actively look out for in AI-generated code, and how do you vet them?
+
+The top two vulnerabilities for AI generated code
+Data Layer Security
+Package Vulnerability and Algorithmic Inefficiency
+
+Data Layer Security:
+AI models mostly prioritise in generating functional code rather than focusing more on secure architecture. 
+AI models often create direct database queries or handles routes from the client with just request params and not authenticating role permissions or any server side JWT authentication middleware. 
+To vet this process, audit every AI generated query or API endpoints to ensure that the database is strictly verified with the authenticated user role access and JWT token verification. 
+Integration of Static Application Security Testing(SAST) tools like SonarQube to flag unparameterised queries and missing authorisation checks before merging the code.
+
+Package Vulnerability and Algorithmic Inefficiency:
+AI coding tools frequently install deprecated, unmaintained or non existent packages, this might result in performance vulnerability or reliability risks. 
+Additionally, AI coding tools generates functionally correct algorithmic logics but the complexity of the logic impacts the performance and results in inefficiency. 
+To vet this process, manually verify every new dependencies suggested by AI tools before registering the packages(by executing npm install), 
+refactor nested loops or collections into preprocessing datasets, ensuring large file operations use streams rather than loading entire payload into memory.
+
+--------------------------------------------------------------------------------------------------------------------------------------------

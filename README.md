@@ -1,3 +1,18 @@
+PART - A
+---------
+// backend
+cd -> ICRT_task/backend 
+npm install 
+node server.js
+
+// frontend
+cd -> ICRT_task/frontend
+npm install
+npm run serve
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+PART - B
+---------
 1. Database Schema: Draft a relational database schema to store users, product details, and metrics. 
 Outline your table structures, primary/foreign keys, and any indexes you would use to optimize lookups.
 

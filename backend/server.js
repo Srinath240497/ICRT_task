@@ -12,6 +12,12 @@ dotenv.config({ quiet: true });
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT || 3000;
 
+app.get("/api", (req, res) => {
+  res.json({
+    message: "Successfully Connected",
+  });
+});
+
 app.post("/api/auth/switch-role", (req, res) => {
   const { role } = req?.body;
   const validRoles = ["basic", "premium", "enterprise"];
@@ -46,11 +52,5 @@ app.get(
     });
   }
 );
-
-app.get("/", (req, res) => {
-  res.json({
-    message: "Successfully Connected",
-  });
-});
 
 app.listen(PORT, () => console.log(`API Server running on port ${PORT}`));
